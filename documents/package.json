@@ -1,0 +1,10 @@
+{
+  "name": "documents",
+  "description": "API Documents for next-todo-api",
+  "scripts": {
+    "aglio": "aglio -i next-todo.apib -s"
+  },
+  "dependencies": {
+    "aglio": "^2.3.0"
+  }
+}

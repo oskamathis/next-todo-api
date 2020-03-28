@@ -1,0 +1,73 @@
+FORMAT: 1A
+HOST: https://asia-northeast1-next-todo-002.cloudfunctions.net
+
+# next-todo
+タスク管理API
+
+# Group 認証
+## トークン発行 [POST /login]
+JWT認証用のトークンを発行する
+
++ Request (application/json)
+    + Attributes
+        + email: `oskamathis@gmail.com` (string, required)
+        + password: `1xU35jQy` (string, required)
+
++ Response 200 (application/json)
+    + Attributes
+        + access_token: `{token}` (string)
+        + token_type: `bearer` (string)
+        + expire_in: `60` (number) - トークンの有効期限
+
++ Response 401 (application/json)
+    + Body
+        ```
+        {
+            "error": "Unauthorized"
+        }
+        ```
+
+
+
+# Group タスク
+## タスク登録 [POST /tasks]
+新規タスクを登録する
+
++ Request (application/json)
+    + Headers
+        ```
+        Authorization: Bearer {token}
+        ```
+    + Attributes
+        + title: `お米を買う` (string, required) - タスク名
+        + category: `買い物リスト` (string, required) - カテゴリ
+        + limit: `2020/5/4` (string, required) - 期限
+        + detail: `次はあきたこまちがいいかもしれない` (string) - タスク詳細
+
++ Response 200 (application/json)
+    + Attributes
+        + message: `Task creation succeeded.` (string) - 登録メッセージ
+
+
+## タスク取得 [GET /tasks/{id}]
+指定したidのタスクを取得する
+
++ Parameters
+    + id: `aJDm3esbPPlGLKseXPXp` (string, required) - タスクID
+
++ Request
+    + Headers
+        ```
+        Authorization: Bearer {token}
+        ```
+
++ Response 200 (application/json)
+    + Body
+        ```
+        {
+            "title": "お米を買う",
+            "category": "買い物リスト",
+            "limit": "2020/5/4",
+            "detail": "次はあきたこまちがいいかもしれない"
+        }
+        ```
