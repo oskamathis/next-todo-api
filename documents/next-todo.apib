@@ -4,6 +4,7 @@ HOST: https://asia-northeast1-next-todo-002.cloudfunctions.net
 # next-todo
 タスク管理API
 
+
 # Group 認証
 ## トークン発行 [POST /login]
 JWT認証用のトークンを発行する
@@ -40,13 +41,30 @@ JWT認証用のトークンを発行する
         ```
     + Attributes
         + title: `お米を買う` (string, required) - タスク名
-        + category: `買い物リスト` (string, required) - カテゴリ
-        + limit: `2020/5/4` (string, required) - 期限
+        + category: `買い物リスト` (string) - カテゴリ
+        + limit: `2020/5/4` (string) - 期限
         + detail: `次はあきたこまちがいいかもしれない` (string) - タスク詳細
 
 + Response 200 (application/json)
-    + Attributes
-        + message: `Task creation succeeded.` (string) - 登録メッセージ
+    + Body
+        ```
+        {
+            "id": "aJDm3esbPPlGLKseXPXp"
+            "title": "お米を買う",
+            "category": "買い物リスト",
+            "limit": "2020/5/4",
+            "detail": "次はあきたこまちがいいかもしれない",
+            "created_at": "2020-03-28T07:55:21.109Z"
+        }
+        ```
+
++ Response 401 (application/json)
+    + Body
+        ```
+        {
+            "error": "Unauthorized"
+        }
+        ```
 
 
 ## タスク取得 [GET /tasks/{id}]
@@ -72,10 +90,121 @@ JWT認証用のトークンを発行する
         }
         ```
 
++ Response 401 (application/json)
+    + Body
+        ```
+        {
+            "error": "Unauthorized"
+        }
+        ```
+
 + Response 404 (application/json)
     + Body
         ```
         {
             "message": "Not Found"
+        }
+        ```
+
+
+## タスク一覧取得 [GET /tasks]
+タスク一覧を取得する
+
++ Request
+    + Headers
+        ```
+        Authorization: Bearer {token}
+        ```
+
++ Response 200 (application/json)
+    + Body
+        ```
+        [
+            {
+                "id": "aJDm3esbPPlGLKseXPXp"
+                "title": "お米を買う",
+                "category": "買い物リスト",
+                "limit": "2020/5/4",
+                "created_at": "2020-03-28T07:55:21.109Z"
+            },
+            {
+                "id": "zRTxMgbCsPCKsbUyU5cg"
+                "title": "高沼カリキュラムを終わらせる",
+                "category": "Work",
+                "limit": "2020/5/11",
+                "created_at": "2020-04-28T08:20:11.109Z"
+            }
+        ]
+        ```
+
++ Response 401 (application/json)
+    + Body
+        ```
+        {
+            "error": "Unauthorized"
+        }
+        ```
+
+
+## タスク更新 [PATCH /tasks]
+指定したidのタスクを更新する
+
++ Request (application/json)
+    + Headers
+        ```
+        Authorization: Bearer {token}
+        ```
+    + Attributes
+        + title: `お米を買う` (string, required) - タスク名
+        + category: `買い物リスト` (string) - カテゴリ
+        + limit: `2020/5/4` (string) - 期限
+        + detail: `次はあきたこまちがいいかもしれない` (string) - タスク詳細
+
++ Response 200 (application/json)
+    + Body
+        ```
+        {
+            "title": "お米を買う",
+            "category": "買い物リスト",
+            "limit": "2020/5/4",
+            "detail": "次はあきたこまちがいいかもしれない"
+        }
+        ```
+
+
++ Response 401 (application/json)
+    + Body
+        ```
+        {
+            "error": "Unauthorized"
+        }
+        ```
+
+
+## タスク削除 [DELETE /tasks/{id}]
+指定したidのタスクを削除する
+
++ Parameters
+    + id: `aJDm3esbPPlGLKseXPXp` (string, required) - タスクID
+
++ Request (application/json)
+    + Headers
+        ```
+        Authorization: Bearer {token}
+        ```
+
++ Response 200 (application/json)
+    + Body
+        ```
+        {
+            "message": "Task deletion succeeded."
+        }
+        ```
+
++ Response 401 (application/json)
+    + Body
+        ```
+        {
+            "error": "Unauthorized"
         }
         ```
