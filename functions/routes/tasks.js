@@ -17,9 +17,9 @@ router.post('/', async (req, res) => {
         'category': req.body.category,
         'limit': req.body.limit,
         'detail': req.body.detail,
-        'created_at': new Date()
+        'created_at': new Date().toISOString()
     }
-    let ref = await db.collection('tasks').add(addTask);
+    let ref = await db.collection('tasks').add({ 'user_id': userId, ...addTask });
     res.send({
         'id': ref.id,
         ...addTask
@@ -34,6 +34,7 @@ router.get('/:id', async (req, res) => {
     if(!userId) {
         res.status(401).send({ 'error': 'Unauthorized' })
     }
+    let ref = db.collection('tasks').doc(req.params.id);
 
     let task = await ref.get().catch(err => {
         console.log('Error getting document', err)
@@ -44,20 +45,29 @@ router.get('/:id', async (req, res) => {
         console.log('No such document!');
         res.status(404).send({ 'message': 'Not Found' });
     } else {
-        console.log('Document data:', task.data());
-        res.send(task.data());
+        let data = task.data();
+        console.log('Document data:', data);
+        delete data['user_id']
+        res.send(data);
     };
 });
 
 /**
  * タスク一覧取得
  */
-router.get('/', async (_, res) => {
+router.get('/', async (req, res) => {
     let userId = auth.getUserId(req);
     if(!userId) {
         res.status(401).send({ 'error': 'Unauthorized' })
     }
-    let ref = db.collection('tasks');
+
+    let sortKeys = ['limit', 'created_at', 'category'];
+    let sortKey = 'limit';
+    if (sortKeys.includes(req.query.sort)) {
+        sortKey = req.query.sort;
+    }
+
+    let ref = db.collection('tasks').where('user_id', '==', userId).orderBy(sortKey);
     let tasks = [];
     await ref.get().then(snapshot => {
         if (snapshot.empty) {
@@ -66,10 +76,12 @@ router.get('/', async (_, res) => {
         }
 
         snapshot.forEach(doc => {
-            console.log(doc.id, '=>', doc.data());
+            let data = doc.data();
+            console.log(doc.id, '=>', data);
+            delete data['user_id'];
             tasks.push({
                 'id': doc.id,
-                ...doc.data()
+                ...data
             });
         })
     }).catch(err => {
