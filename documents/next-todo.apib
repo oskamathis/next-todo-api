@@ -6,7 +6,7 @@ HOST: https://asia-northeast1-next-todo-002.cloudfunctions.net
 
 
 # Group 認証
-## ユーザ登録 [POST /regist]
+## ユーザ登録 [POST /users]
 新規ユーザを登録する
 
 + Request (application/json)
@@ -23,8 +23,8 @@ HOST: https://asia-northeast1-next-todo-002.cloudfunctions.net
         ```
 
 
-## トークン発行 [POST /login]
-JWT認証用のトークンを発行する
+## トークン発行 [POST /users/login]
+認証用トークンを発行する
 
 + Request (application/json)
     + Attributes
@@ -33,9 +33,7 @@ JWT認証用のトークンを発行する
 
 + Response 200 (application/json)
     + Attributes
-        + access_token: `{token}` (string)
-        + token_type: `bearer` (string)
-        + expire_in: `60` (number) - トークンの有効期限
+        + token: `{token}` (string) - 認証用トークン
 
 + Response 401 (application/json)
     + Body
@@ -44,6 +42,7 @@ JWT認証用のトークンを発行する
             "error": "Unauthorized"
         }
         ```
+
 
 # Group カテゴリ管理
 ## カテゴリ登録 [POST /categories]
@@ -61,9 +60,96 @@ JWT認証用のトークンを発行する
     + Body
         ```
         {
+            "id": "HebkGmfqSMHImF6ObgrP",
             "name": "買い物リスト"
         }
         ```
+
+
+## カテゴリ一覧取得 [GET /categories]
+カテゴリ一覧を取得する
+
++ Request
+    + Headers
+        ```
+        Authorization: Bearer {token}
+        ```
+
++ Response 200 (application/json)
+    + Body
+        ```
+        [
+            {
+                "id": "HebkGmfqSMHImF6ObgrP",
+                "name": "買い物リスト"
+            },
+            {
+                "id": "tnZ1MUMZsSbiFnCNkvGt",
+                "name": "買いたい"
+            }
+        ]
+        ```
+
++ Response 401 (application/json)
+    + Body
+        ```
+        {
+            "error": "Unauthorized"
+        }
+        ```
+
+
+## カテゴリ更新 [PATCH /categories/{id}]
+指定したIDのカテゴリを更新する
+
++ Parameters
+    + id: `HebkGmfqSMHImF6ObgrP` (string, required) - カテゴリID
+
++ Request (application/json)
+    + Headers
+        ```
+        Authorization: Bearer {token}
+        ```
+    + Attributes
+        + name: `買い物リスト` (string, required) - カテゴリ名
+
++ Response 200 (application/json)
+    + Body
+        ```
+        {
+            "name": "買い物リスト"
+        }
+        ```
+
+
+## カテゴリ削除 [DELETE /categories/{id}]
+指定したIDのカテゴリを削除する
+
++ Parameters
+    + id: `HebkGmfqSMHImF6ObgrP` (string, required) - カテゴリID
+
++ Request (application/json)
+    + Headers
+        ```
+        Authorization: Bearer {token}
+        ```
+
++ Response 200 (application/json)
+    + Body
+        ```
+        {
+            "message": "Successfully deleted category."
+        }
+        ```
+
++ Response 401 (application/json)
+    + Body
+        ```
+        {
+            "error": "Unauthorized"
+        }
+        ```
+
 
 # Group タスク管理
 ## タスク登録 [POST /tasks]
@@ -84,7 +170,7 @@ JWT認証用のトークンを発行する
     + Body
         ```
         {
-            "id": "aJDm3esbPPlGLKseXPXp"
+            "id": "aJDm3esbPPlGLKseXPXp",
             "title": "お米を買う",
             "category": "買い物リスト",
             "limit": "2020/5/4",
@@ -103,7 +189,7 @@ JWT認証用のトークンを発行する
 
 
 ## タスク取得 [GET /tasks/{id}]
-指定したidのタスクを取得する
+指定したIDのタスクを取得する
 
 + Parameters
     + id: `aJDm3esbPPlGLKseXPXp` (string, required) - タスクID
@@ -142,8 +228,11 @@ JWT認証用のトークンを発行する
         ```
 
 
-## タスク一覧取得 [GET /tasks]
+## タスク一覧取得 [GET /tasks{?sort}]
 タスク一覧を取得する
+
++ Parameters
+    + sort: `limit` (string, optional) - ソートキー(created_at(作成日時)、category(カテゴリ)、limit(期限))
 
 + Request
     + Headers
@@ -156,18 +245,18 @@ JWT認証用のトークンを発行する
         ```
         [
             {
-                "id": "aJDm3esbPPlGLKseXPXp"
+                "id": "aJDm3esbPPlGLKseXPXp",
                 "title": "お米を買う",
                 "category": "買い物リスト",
                 "limit": "2020/5/4",
                 "created_at": "2020-03-28T07:55:21.109Z"
             },
             {
-                "id": "zRTxMgbCsPCKsbUyU5cg"
+                "id": "zRTxMgbCsPCKsbUyU5cg",
                 "title": "高沼カリキュラムを終わらせる",
                 "category": "Work",
                 "limit": "2020/5/11",
-                "created_at": "2020-04-28T08:20:11.109Z"
+                "created_at": "2020-03-28T08:20:11.109Z"
             }
         ]
         ```
@@ -182,7 +271,7 @@ JWT認証用のトークンを発行する
 
 
 ## タスク更新 [PATCH /tasks]
-指定したidのタスクを更新する
+指定したIDのタスクを更新する
 
 + Request (application/json)
     + Headers
@@ -217,7 +306,7 @@ JWT認証用のトークンを発行する
 
 
 ## タスク削除 [DELETE /tasks/{id}]
-指定したidのタスクを削除する
+指定したIDのタスクを削除する
 
 + Parameters
     + id: `aJDm3esbPPlGLKseXPXp` (string, required) - タスクID
@@ -233,6 +322,103 @@ JWT認証用のトークンを発行する
         ```
         {
             "message": "Successfully deleted task."
+        }
+        ```
+
++ Response 401 (application/json)
+    + Body
+        ```
+        {
+            "error": "Unauthorized"
+        }
+        ```
+
+
+# Group お気に入り管理
+## お気に入り登録 [PUT /tasks/{id}/fav]
+指定したIDのタスクをfav(お気に入り登録)する
+
++ Parameters
+    + id: `aJDm3esbPPlGLKseXPXp` (string, required) - タスクID
+
++ Request (application/json)
+    + Headers
+        ```
+        Authorization: Bearer {token}
+        ```
+
++ Response 200 (application/json)
+    + Body
+        ```
+        {
+            "message": "Successfully faved task."
+        }
+        ```
+
++ Response 401 (application/json)
+    + Body
+        ```
+        {
+            "error": "Unauthorized"
+        }
+        ```
+
+
+## お気に入り一覧取得 [GET /tasks/fav]
+お気に入り登録したタスクの一覧を取得する
+
++ Request
+    + Headers
+        ```
+        Authorization: Bearer {token}
+        ```
+
++ Response 200 (application/json)
+    + Body
+        ```
+        [
+            {
+                "id": "aJDm3esbPPlGLKseXPXp",
+                "title": "お米を買う",
+                "category": "買い物リスト",
+                "limit": "2020/5/4",
+                "created_at": "2020-03-28T07:55:21.109Z"
+            },
+            {
+                "id": "zRTxMgbCsPCKsbUyU5cg",
+                "title": "高沼カリキュラムを終わらせる",
+                "category": "Work",
+                "limit": "2020/5/11",
+                "created_at": "2020-03-28T08:20:11.109Z"
+            }
+        ]
+        ```
+
++ Response 401 (application/json)
+    + Body
+        ```
+        {
+            "error": "Unauthorized"
+        }
+        ```
+
+## お気に入り解除 [DELETE /tasks/{id}/fav]
+指定したIDのタスクのfav(お気に入り登録)を解除する
+
++ Parameters
+    + id: `aJDm3esbPPlGLKseXPXp` (string, required) - タスクID
+
++ Request (application/json)
+    + Headers
+        ```
+        Authorization: Bearer {token}
+        ```
+
++ Response 200 (application/json)
+    + Body
+        ```
+        {
+            "message": "Successfully unfaved task."
         }
         ```
 
