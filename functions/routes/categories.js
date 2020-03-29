@@ -8,6 +8,9 @@ const auth = require('./auth.js');
  */
 router.post('/', async (req, res) => {
     let userId = auth.getUserId(req);
+    if(!userId) {
+        res.status(401).send({ 'error': 'Unauthorized' })
+    }
 
     let addCategory = {
         'name': req.body.name
@@ -22,6 +25,10 @@ router.post('/', async (req, res) => {
  */
 router.get('/', async (req, res) => {
     let userId = auth.getUserId(req);
+    if(!userId) {
+        res.status(401).send({ 'error': 'Unauthorized' })
+    }
+
     let categories = [];
     await db.collection('categories').where('user_id', '==', userId).get().then(snapshot => {
         if (snapshot.empty) {
@@ -45,6 +52,11 @@ router.get('/', async (req, res) => {
  * カテゴリ削除
  */
 router.delete('/:id', async (req, res) => {
+    let userId = auth.getUserId(req);
+    if(!userId) {
+        res.status(401).send({ 'error': 'Unauthorized' })
+    }
+
     await db.collection('categories').doc(req.params.id).delete();
 
     res.send({

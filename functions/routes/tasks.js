@@ -1,11 +1,17 @@
 const admin = require('./admin.js');
 const db = admin.firestore();
 const router = require('express-promise-router')();
+const auth = require('./auth.js');
 
 /**
  * タスク登録
  */
 router.post('/', async (req, res) => {
+    let userId = auth.getUserId(req);
+    if(!userId) {
+        res.status(401).send({ 'error': 'Unauthorized' })
+    }
+
     let addTask = {
         'title': req.body.title,
         'category': req.body.category,
@@ -24,6 +30,11 @@ router.post('/', async (req, res) => {
  * タスク取得
  */
 router.get('/:id', async (req, res) => {
+    let userId = auth.getUserId(req);
+    if(!userId) {
+        res.status(401).send({ 'error': 'Unauthorized' })
+    }
+
     let task = await ref.get().catch(err => {
         console.log('Error getting document', err)
         res.status(500).send({ 'message': 'Internal Server Error' });
@@ -42,6 +53,10 @@ router.get('/:id', async (req, res) => {
  * タスク一覧取得
  */
 router.get('/', async (_, res) => {
+    let userId = auth.getUserId(req);
+    if(!userId) {
+        res.status(401).send({ 'error': 'Unauthorized' })
+    }
     let ref = db.collection('tasks');
     let tasks = [];
     await ref.get().then(snapshot => {
@@ -69,6 +84,11 @@ router.get('/', async (_, res) => {
  * タスク更新
  */
 router.patch('/:id', async (req, res) => {
+    let userId = auth.getUserId(req);
+    if(!userId) {
+        res.status(401).send({ 'error': 'Unauthorized' })
+    }
+
     let updateTask = {
         'title': req.body.title,
         'category': req.body.category,
@@ -86,6 +106,11 @@ router.patch('/:id', async (req, res) => {
  * タスク削除
  */
 router.delete('/:id', async (req, res) => {
+    let userId = auth.getUserId(req);
+    if(!userId) {
+        res.status(401).send({ 'error': 'Unauthorized' })
+    }
+
     await db.collection('tasks').doc(req.params.id).delete();
 
     res.send({

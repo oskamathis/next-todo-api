@@ -16,12 +16,15 @@ module.exports.getEncryptedString = (raw) => {
 }
 
 module.exports.getDecryptedString = (encrypted) => {
-    let iv = Buffer.from(BUFFER_KEY)
-    let encryptedText = Buffer.from(encrypted, ENCODING)
-    let decipher = crypto.createDecipheriv(ENCRYPT_METHOD, Buffer.from(ENCRYPTION_KEY), iv)
-    let decrypted = decipher.update(encryptedText)
+    try {
+        let iv = Buffer.from(BUFFER_KEY)
+        let encryptedText = Buffer.from(encrypted, ENCODING)
+        let decipher = crypto.createDecipheriv(ENCRYPT_METHOD, Buffer.from(ENCRYPTION_KEY), iv)
+        let decrypted = decipher.update(encryptedText)
 
-    decrypted = Buffer.concat([decrypted, decipher.final()])
-
-    return decrypted.toString()
+        decrypted = Buffer.concat([decrypted, decipher.final()])
+        return decrypted.toString()
+    } catch (err) {
+        return ''
+    }
 }
