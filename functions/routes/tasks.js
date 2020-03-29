@@ -90,7 +90,7 @@ router.delete('/:id', async (req, res) => {
     await db.collection('tasks').doc(req.params.id).delete();
 
     res.send({
-        'message': 'Task deletion succeeded.'
+        'message': 'Successfully deleted task.'
     });
 });
 
