@@ -6,13 +6,30 @@ HOST: https://asia-northeast1-next-todo-002.cloudfunctions.net
 
 
 # Group 認証
+## ユーザ登録 [POST /users]
+新規ユーザを登録する
+
++ Request (application/json)
+    + Attributes
+        + email: `oskamathis@gmail.com` (string, required) - メールアドレス
+        + password: `1xU35jQy` (string, required) - パスワード
+
++ Response 200 (application/json)
+    + body
+        ```
+        {
+            "email": "oskamathis@gmail.com"
+        }
+        ```
+
+
 ## トークン発行 [POST /login]
 JWT認証用のトークンを発行する
 
 + Request (application/json)
     + Attributes
-        + email: `oskamathis@gmail.com` (string, required)
-        + password: `1xU35jQy` (string, required)
+        + email: `oskamathis@gmail.com` (string, required) - メールアドレス
+        + password: `1xU35jQy` (string, required) - パスワード
 
 + Response 200 (application/json)
     + Attributes
@@ -30,7 +47,7 @@ JWT認証用のトークンを発行する
 
 
 
-# Group タスク
+# Group タスク管理
 ## タスク登録 [POST /tasks]
 新規タスクを登録する
 
