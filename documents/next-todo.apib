@@ -45,7 +45,25 @@ JWT認証用のトークンを発行する
         }
         ```
 
+# Group カテゴリ管理
+## カテゴリ登録 [POST /categories]
+新規カテゴリを登録する
 
++ Request (application/json)
+    + Headers
+        ```
+        Authorization: Bearer {token}
+        ```
+    + Attributes
+        + name: `買い物リスト` (string, required) - カテゴリ名
+
++ Response 200 (application/json)
+    + Body
+        ```
+        {
+            "name": "買い物リスト"
+        }
+        ```
 
 # Group タスク管理
 ## タスク登録 [POST /tasks]

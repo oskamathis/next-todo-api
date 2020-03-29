@@ -11,9 +11,9 @@ router.post('/', async (req, res) => {
         'category': req.body.category,
         'limit': req.body.limit,
         'detail': req.body.detail,
-        'created_at': new Date().toISOString()
+        'created_at': new Date()
     }
-    let ref = await db.collection('tasks').add(addTask)
+    let ref = await db.collection('tasks').add(addTask);
     res.send({
         'id': ref.id,
         ...addTask
@@ -24,7 +24,6 @@ router.post('/', async (req, res) => {
  * タスク取得
  */
 router.get('/:id', async (req, res) => {
-    let ref = db.collection('tasks').doc(req.params.id);
     let task = await ref.get().catch(err => {
         console.log('Error getting document', err)
         res.status(500).send({ 'message': 'Internal Server Error' });
@@ -76,7 +75,7 @@ router.patch('/:id', async (req, res) => {
         'limit': req.body.limit,
         'detail': req.body.detail
     }
-    await db.collection('tasks').doc(req.params.id).update(updateTask)
+    await db.collection('tasks').doc(req.params.id).update(updateTask);
     res.send({
         'id': req.params.id,
         ...updateTask
